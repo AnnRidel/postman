@@ -1,0 +1,1386 @@
+{
+	"info": {
+		"_postman_id": "14d761f3-1ebf-40dc-a66a-5a01148fc011",
+		"name": "api_by_INN",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "CreateAccount",
+			"item": [
+				{
+					"name": "TestCreateAccount_Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7ce625b4-b037-4ba7-99a2-c8751ea13565",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"token\",data.TokenInfo.access_token);",
+									"",
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});  ",
+									"",
+									"postman.setEnvironmentVariable(\"useCertificate\", false);",
+									"",
+									"var data = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"INN\",data.AbonentInfo.Inn);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "5a2b33f1-ec68-43fc-9528-76a085a16702",
+								"exec": [
+									"function getRandomEmail(domain,length)",
+									"{",
+									"    var text = \"\";",
+									"    var possible = \"QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm0123456789\";",
+									"    ",
+									"    for(var i=0; i< length; i++)",
+									"        text +=possible.charAt(Math.floor(Math.random() * possible.length));",
+									"    return text + domain;",
+									"}",
+									"",
+									"var email = getRandomEmail (\"@test.com\", 10);",
+									"postman.setEnvironmentVariable (\"client_email\", email);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/createaccount?email={{client_email}}&inn={{INN}}&kpp={{KPP}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"createaccount"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "{{client_email}}"
+								},
+								{
+									"key": "inn",
+									"value": "{{INN}}"
+								},
+								{
+									"key": "kpp",
+									"value": "{{KPP}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "TestCreateAccount_LoginExist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7ce625b4-b037-4ba7-99a2-c8751ea13565",
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});  ",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Пользователь с таким email уже существует\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "5a2b33f1-ec68-43fc-9528-76a085a16702",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/createaccount?email={{client_email}}&inn={{INN}}&kpp={{KPP}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"createaccount"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "{{client_email}}"
+								},
+								{
+									"key": "inn",
+									"value": "{{INN}}"
+								},
+								{
+									"key": "kpp",
+									"value": "{{KPP}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Создает аккаунт с указанными параметрами: email, inn, kpp (для юрлиц, для ИП КПП = NULL).",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "e382d559-2e55-4493-81c2-f38f32089fb6",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "25f8d235-a2d9-4adf-a99b-24579a302645",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "RestorePassword",
+			"item": [
+				{
+					"name": "TestRestorePassword",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d107efec-ad0f-4a02-9810-f6e23f09f1ce",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"true\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"Email\": \"{{client_email}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/restorepassword",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"restorepassword"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Отправляет на указанный email ссылку на смену пароля.\n",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "376c4ca3-f6ac-4911-820b-ac70a0b79961",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "7d0d7dbf-c1d2-417f-ac6b-cbf42062d527",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "GetAddresses",
+			"item": [
+				{
+					"name": "TestGetAddresses",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "425d7a12-2c2a-449c-9aac-184282be2356",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"var data = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"LegalAddressFiasId\", data[0].FiasAddressId);",
+									"  "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/getaddresses?term=55",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"getaddresses"
+							],
+							"query": [
+								{
+									"key": "term",
+									"value": "55"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Автокомплит адреса по части. В тесте используется '1234'.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "13c8e152-aec7-4a2c-aa3f-b06fd8b26b5c",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "2c637d10-0914-4e7c-8507-c0692474d084",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "CreateRequest",
+			"item": [
+				{
+					"name": "TestCreateRequest_Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c4f00823-0dc3-4de2-9500-58ca5849f20f",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Success\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.Success).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"name": "Content-Type",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+							"key": "Content-Type",
+							"name": "Content-Type",
+							"value": "application/json",
+							"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"Utm\": {\r\n    \"Source\": \"google\",\r\n    \"Medium\": \"email\",\r\n    \"Campaign\": \"docs\",\r\n    \"Content\": \"keyword\",\r\n    \"Term\": \"link\"\r\n  },\r\n  \"Agent\": {\r\n    \"Name\": \"ООО ТРОСЕР ПЛЮС\",\r\n    \"Code\": {\r\n      \"AI1\": \"95DA4-0E61-4BA\",\r\n      \"AI2\": \"95DA4-0E61-4BA\",\r\n      \"AI3\": \"95DA4-0E61-4BA\",\r\n      \"AI4\": \"95DA4-0E61-4BA\"\r\n    },\r\n  },\r\n  \"SelectedTariff\": {\r\n    \"Name\": \"Комфортный\",\r\n    \"IsSpecialMode\": true,\r\n    \"Region\": \"78\",\r\n    \"TariffPaymentPeriodType\": \"год\"\r\n  },\r\n  \"INN\": \"{{INN}}\",\r\n  \"KPP\": \"{{KPP}}\",\r\n  \"OGRN\": \"1197847074061\",\r\n  \"LegalAddressFiasId\": \"{{LegalAddressFiasId}}\",\r\n  \"CompanyShortName\": \"ФГУП\",\r\n  \"ContactPersonEmail\": \"testtaxcom@mail.ru\",\r\n  \"ContactPersonFullName\": \"Меланчик Евграф Кимович\",\r\n  \"ContactPersonPhone\": \"1234568987\",\r\n  \"LastName\": \"Меланчик\",\r\n  \"FirstName\": \"Евграф\",\r\n  \"MiddleName\": \"Кимович\",\r\n  \"Post\": \"192174\",\r\n  \"SNILS\": \"35125124836\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/createrequest",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"createrequest"
+							],
+							"query": [
+								{
+									"key": "requestId",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "TestCreateRequestExist_Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c4f00823-0dc3-4de2-9500-58ca5849f20f",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Абонент уже подключил или подключает данный продукт\");",
+									"});",
+									"",
+									"var data = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"RequestId\", data.RequestId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"name": "Content-Type",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+							"key": "Content-Type",
+							"name": "Content-Type",
+							"value": "application/json",
+							"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"Utm\": {\r\n    \"Source\": \"google\",\r\n    \"Medium\": \"email\",\r\n    \"Campaign\": \"docs\",\r\n    \"Content\": \"keyword\",\r\n    \"Term\": \"link\"\r\n  },\r\n  \"Agent\": {\r\n    \"Name\": \"ООО ТРОСЕР ПЛЮС\",\r\n    \"Code\": {\r\n      \"AI1\": \"95DA4-0E61-4BA\",\r\n      \"AI2\": \"95DA4-0E61-4BA\",\r\n      \"AI3\": \"95DA4-0E61-4BA\",\r\n      \"AI4\": \"95DA4-0E61-4BA\"\r\n    },\r\n  },\r\n  \"SelectedTariff\": {\r\n    \"Name\": \"Комфортный\",\r\n    \"IsSpecialMode\": true,\r\n    \"Region\": \"78\",\r\n    \"TariffPaymentPeriodType\": \"год\"\r\n  },\r\n  \"INN\": \"{{INN}}\",\r\n  \"KPP\": \"{{KPP}}\",\r\n  \"OGRN\": \"1197847074061\",\r\n  \"LegalAddressFiasId\": \"{{LegalAddressFiasId}}\",\r\n  \"CompanyShortName\": \"ФГУП\",\r\n  \"ContactPersonEmail\": \"testtaxcom@mail.ru\",\r\n  \"ContactPersonFullName\": \"Меланчик Евграф Кимович\",\r\n  \"ContactPersonPhone\": \"1234568987\",\r\n  \"LastName\": \"Меланчик\",\r\n  \"FirstName\": \"Евграф\",\r\n  \"MiddleName\": \"Кимович\",\r\n  \"Post\": \"192174\",\r\n  \"SNILS\": \"35125124836\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/createrequest",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"createrequest"
+							],
+							"query": [
+								{
+									"key": "requestId",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "TestCreateRequest_Login - создает заявку на подключение отчетности, не подписанную сертификатом.\nTestCreateRequestExist_Login - проверяет, что отправить заявку с одинаковыми данными нельзя.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "93c8f8e3-5148-48c2-8c43-7a8d723650e5",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "ef85f506-da33-4683-944e-1050625c82a3",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "GeneratePdfLink",
+			"item": [
+				{
+					"name": "TestGeneratePdfLink_Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c4f00823-0dc3-4de2-9500-58ca5849f20f",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"pdf\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"name": "Content-Type",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+							"key": "Content-Type",
+							"name": "Content-Type",
+							"value": "application/json",
+							"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"Utm\": {\r\n    \"Source\": \"google\",\r\n    \"Medium\": \"email\",\r\n    \"Campaign\": \"docs\",\r\n    \"Content\": \"keyword\",\r\n    \"Term\": \"link\"\r\n  },\r\n  \"Agent\": {\r\n    \"Name\": \"ООО ТРОСЕР ПЛЮС\",\r\n    \"Code\": {\r\n      \"AI1\": \"95DA4-0E61-4BA\",\r\n      \"AI2\": \"95DA4-0E61-4BA\",\r\n      \"AI3\": \"95DA4-0E61-4BA\",\r\n      \"AI4\": \"95DA4-0E61-4BA\"\r\n    },\r\n  },\r\n  \"SelectedTariff\": {\r\n    \"Name\": \"Комфортный\",\r\n    \"IsSpecialMode\": true,\r\n    \"Region\": \"78\",\r\n    \"TariffPaymentPeriodType\": \"год\"\r\n  },\r\n  \"INN\": \"{{INN}}\",\r\n  \"KPP\": \"{{KPP}}\",\r\n  \"OGRN\": \"1197847074061\",\r\n  \"LegalAddressFiasId\": \"{{LegalAddressFiasId}}\",\r\n  \"CompanyShortName\": \"ФГУП\",\r\n  \"ContactPersonEmail\": \"testtaxcom@mail.ru\",\r\n  \"ContactPersonFullName\": \"Меланчик Евграф Кимович\",\r\n  \"ContactPersonPhone\": \"1234568987\",\r\n  \"LastName\": \"Меланчик\",\r\n  \"FirstName\": \"Евграф\",\r\n  \"MiddleName\": \"Кимович\",\r\n  \"Post\": \"192174\",\r\n  \"SNILS\": \"35125124836\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/generatepdflink",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"generatepdflink"
+							],
+							"query": [
+								{
+									"key": "requestId",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Проверка генерации pdf для созданной заявки.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "f1684f81-65ca-4868-ac4a-d8e7ba85664d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "6d0117ae-db9d-4c1d-97a1-fff7befdd722",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "GetRequests",
+			"item": [
+				{
+					"name": "TestGetRequests",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8479e6f6-a939-47f3-be3e-01414f794096",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var data = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"RequestId\", data[0].RequestId);",
+									"",
+									"pm.test(\"StatusDescription\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData[0].StatusDescription).to.be.oneOf([\"Заявка отправлена\", \"Заявка создана\"]);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/getrequests",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"getrequests"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Получает все заявки абонента. Получает requestId заявки на отчетность.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b0f94880-0762-4081-b00b-955eced81296",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "bec30097-aaab-4cb0-9a26-9f74e2a34526",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "GetRequest",
+			"item": [
+				{
+					"name": "TestGetRequest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "93a28853-4d44-4872-98be-306862fede0d",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"INN\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var INN = pm.environment.get(\"INN\");",
+									"    pm.expect(jsonData.CommonRequest.Inn).to.eql(INN);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/getrequest?requestId={{RequestId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"getrequest"
+							],
+							"query": [
+								{
+									"key": "requestId",
+									"value": "{{RequestId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Получает заявку по requestId.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "14fcebc8-8d3e-488e-946f-1401302b06d1",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "55a3cc44-b1ad-4273-8fd6-2a1040ec6816",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "GetProfile",
+			"item": [
+				{
+					"name": "TestGetProfile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "384b6b19-0db8-4c5b-8248-c1a599a9c0a2",
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});",
+									"pm.test(\"INN\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var INN = pm.environment.get(\"INN\");",
+									"    pm.expect(jsonData.INN).to.eql(INN);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/getprofile",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"getprofile"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "По токену авторизации получает информацию о кабинете абонента.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "8457b1cb-d5c1-41b9-9d99-46d26cc812e7",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "18fc0536-a4fd-437e-8dfc-b7e5c1afb09a",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "GetTariffs",
+			"item": [
+				{
+					"name": "TestGetTariffs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "899329bd-b883-4611-a9c7-2e16b4accaa6",
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "regionCode",
+								"value": "77",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "productType",
+								"value": "1",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{url}}/gettariffs?regionCode=77&productType=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"gettariffs"
+							],
+							"query": [
+								{
+									"key": "regionCode",
+									"value": "77"
+								},
+								{
+									"key": "productType",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Получает тарифы для заданного региона. В тесте используется регион 77.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "1937f7be-eb66-414c-9b7e-4840054bb6a1",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "927da58a-d69b-47fb-ba28-6dc6c3ebf4c5",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "GetProductList",
+			"item": [
+				{
+					"name": "TestGetProductList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e7a1fa6c-930c-4b41-a42e-77c81f2b036c",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData[2].Name).to.eql(\"Отчетность\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/getproductlist",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"getproductlist"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "По токену авторизации получает информацию о всех продуктах абонента с указанием их статусов.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "ebd37e0b-1bae-4625-a030-38e9c626e423",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "aaa4b9c4-38f0-4eda-9974-b6893171ee50",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "AutocompleteCompany",
+			"item": [
+				{
+					"name": "TestAutocompleteCompany",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "61bd4250-d2d0-4b74-bb1d-1b98fc20c63b",
+								"exec": [
+									"pm.test(\"Id\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData[0].Id).to.eql(\"1021202250849\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/autocomplete/company?term=12",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"autocomplete",
+								"company"
+							],
+							"query": [
+								{
+									"key": "term",
+									"value": "12"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Автокомплит информации о компании по части названия/ИНН. В тесте используется часть '12'.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "dc55e4aa-76c6-467c-b052-30585ef6cb24",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "2d171c4a-3552-43f6-b125-f9d21c01ad1b",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "GetAccountData",
+			"item": [
+				{
+					"name": "TestGetAccountData",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "236c482a-76a9-4714-89c6-1b304dc7d0cc",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"CompanyShortName\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/getaccountdata?inn={{INN}}&useCertificate={{useCertificate}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"getaccountdata"
+							],
+							"query": [
+								{
+									"key": "inn",
+									"value": "{{INN}}"
+								},
+								{
+									"key": "useCertificate",
+									"value": "{{useCertificate}}"
+								}
+							]
+						},
+						"description": "Получает информацию об аккаунте по инн и наличию сертификата"
+					},
+					"response": []
+				}
+			],
+			"description": "Получает информацию об аккаунте по инн и наличию сертификата",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "d031c2cb-d3e5-4ab6-93d7-b75cd6f57f88",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "7d04144f-fdb0-467a-b05b-b51a168cff59",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "GetAgents",
+			"item": [
+				{
+					"name": "TestGetAllAgents",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0f864b5d-7e27-48bc-ae70-bd5847c1bb90",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Республика Башкортостан\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}//getallagents?productType=1&abonentType=0",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"",
+								"getallagents"
+							],
+							"query": [
+								{
+									"key": "productType",
+									"value": "1"
+								},
+								{
+									"key": "abonentType",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "TestGetAgents",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ab439467-17d2-411a-a860-0c865e34c3a2",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"в г. Санкт-Петербург\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/getagents?regionCode=78&productType=1&abonentType=0",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"",
+								"getagents"
+							],
+							"query": [
+								{
+									"key": "regionCode",
+									"value": "78"
+								},
+								{
+									"key": "productType",
+									"value": "1"
+								},
+								{
+									"key": "abonentType",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "TestGetAllAgents - получает информацию об агентах для всех регионов по типу продукта и типу абонента. В тесте: тип продукта 1, тип абонента 0.\r\n\r\nTestGetAgents - Получает информацию о агентах по региону, типу продукта и типу абонента. В тесте: код региона 78, тип продукта 1, тип абонента 0.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "a8095a38-4f09-4bed-958b-f813233b8a61",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "5d046cfb-e11f-47d8-8624-749d846ef615",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "GetTotalPrice",
+			"item": [
+				{
+					"name": "TestGetTotalPrice",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "eca53833-c47f-488d-8bb3-a5a67ebfb415",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"totalPrice\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.totalPrice).to.eql(14400);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"ExchangeDirections\": {\r\n    \"EDOFNS\": [\r\n      \"4010\"\r\n    ],\r\n    \"EDOPFR\": [\r\n      {\r\n        \"Insurer\": \"111111111111\",\r\n        \"UPFR\": \"111111\"\r\n      }\r\n    ],\r\n    \"EDOFSS\": [\r\n      \"4010401040\"\r\n    ],\r\n    \"EDORS\": [\r\n      {\r\n        \"OKPO\": \"12345678\",\r\n        \"Statistic\": \"20-00\"\r\n      }\r\n    ],\r\n    \"EDORP\": [\r\n      \"123123123\"\r\n    ],\r\n    \"EDOBR\": [\r\n        \"123001001\"\r\n    ]\r\n  },\r\n  \"SelectedTariff\": {\r\n    \"Name\": \"Удобный\",\r\n    \"IsSpecialMode\": false,\r\n    \"Region\": \"77\",\r\n    \"TariffPaymentPeriodType\": \"год\"\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/gettotalprice",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"gettotalprice"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Получает полную стоимость для выбранных услуг.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "1f231dde-21ee-4611-b0bd-c210d946ef54",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "c1149024-7d86-4204-850e-9e97dccefa6e",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "CreateFilerRequest",
+			"item": [
+				{
+					"name": "TestCreateFilerRequest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6a3bee83-1a3b-41a3-9779-2a7b87e3a71d",
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Отсутствует тело сертификата\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"CertificateBodyInBase64\": \"{{CertificateBodyInBase64}}\",\t\r\n  \"Utm\": {\r\n    \"Source\": \"google\",\r\n    \"Medium\": \"email\",\r\n    \"Campaign\": \"docs\",\r\n    \"Content\": \"keyword\",\r\n    \"Term\": \"link\"\r\n  },\r\n  \"Agent\": {\r\n    \"Name\": \"ООО \\\"АйТи Мониторинг\\\"\",\r\n    \"Code\": {\r\n      \"AI1\": \"28F45-EE7E-4A9\",\r\n      \"AI2\": \"28F45-EE7E-4A9\",\r\n      \"AI3\": \"28F45-EE7E-4A9\",\r\n      \"AI4\": \"28F45-EE7E-4A9\"\r\n    },\r\n    \"Inn\": null,\r\n    \"Region\": \"Краснодарский край\",\r\n    \"Address\": \"350072, Краснодарский край, г КРАСНОДАР, ул Рашпилевская, дом 287, помещение 303\",\r\n    \"Phone\": \"8 (800) 200-79-32\",\r\n    \"Order\": 0,\r\n    \"Priority\": 0,\r\n    \"Coordinates\": [\r\n      \"45.059873000\",\r\n      \"38.972627000\"\r\n    ],\r\n       \"BeautifulPhone\": \"8 (800) 200-79-32\"\r\n  },\r\n  \"TariffName\": \"Безлимитный\",\r\n  \"FnsCode\": \"9971\",\r\n  \"INN\": \"{{INN}}\",\r\n  \"KPP\": \"{{KPP}}\",\r\n  \"LegalAddressFiasId\": \"{{LegalAddressFiasId}}\",\r\n  \"PostAddressFiasId\": \"{{LegalAddressFiasId}}\",\r\n  \"FactAddressFiasId\": \"{{LegalAddressFiasId}}\",\r\n  \"CompanyShortName\": \"ИП ЖАДЬКО МИХАИЛ НИКОЛАЕВИЧ\",\r\n  \"ContactPersonEmail\": \"testtaxcom@mail.ru\",\r\n  \"OGRN\": \"1197847074061\",\r\n  \"ContactPersonFullName\": \"Меланчик Евграф Кимович\",\r\n  \"ContactPersonPhone\": \"1234568987\",\r\n  \"LastName\": \"Меланчик\",\r\n  \"FirstName\": \"Евграф\",\r\n  \"MiddleName\": \"Кимович\",\r\n  \"Post\": \"192174\",\r\n  \"SNILS\": \"35125124836\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/createfilerrequest",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"createfilerrequest"
+							]
+						},
+						"description": "Отправляет заявку на подключение Файлера"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "53cf94bc-f06c-498f-a98a-505e01567605",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "e2b1da29-930c-4d7c-a8c8-08ad46f85459",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
